@@ -74,17 +74,20 @@
     const gameBoard = document.getElementById('game-board');
     gameBoard.innerHTML = '';
 
-    for (let i = 1; i < tilesCount; i++) {
+    for (let i = 0; i < tilesCount; i++) {
       const tile = document.createElement('div');
       tile.classList.add('tile');
       tile.style.width = tileSize + 'px';
       tile.style.height = tileSize + 'px';
-      tile.textContent = i;
-      tile.setAttribute('data-id', i);
+      tile.textContent = i + 1;
+      tile.setAttribute('data-id', i + 1);
       tile.addEventListener('click', moveTile);
       gameBoard.appendChild(tile);
       tiles.push(tile);
     }
+
+    // Add an empty tile (representing the space)
+    tiles[tilesCount - 1].classList.add('empty');
   }
 
   function shuffleTiles() {
@@ -110,4 +113,41 @@
   }
 
   function isValidMove(currentTile, emptyTile) {
-    const
+    const currentIndex = parseInt(currentTile.getAttribute('data-id'));
+    const emptyIndex = parseInt(emptyTile.getAttribute('data-id'));
+
+    // Get current positions in the array
+    const currentPos = tiles.indexOf(currentTile);
+    const emptyPos = tiles.indexOf(emptyTile);
+
+    // Check if adjacent horizontally or vertically
+    return Math.abs(currentIndex - emptyIndex) === 1 || Math.abs(currentPos - emptyPos) === boardSize;
+  }
+
+  function swapTiles(tile1, tile2) {
+    const tempOrder = tile1.style.order;
+    tile1.style.order = tile2.style.order;
+    tile2.style.order = tempOrder;
+
+    // Update array positions
+    const index1 = tiles.indexOf(tile1);
+    const index2 = tiles.indexOf(tile2);
+    [tiles[index1], tiles[index2]] = [tiles[index2], tiles[index1]];
+  }
+
+  function checkWin() {
+    const tilesOrder = tiles.map(tile => parseInt(tile.getAttribute('data-id')));
+    const sortedOrder = [...tilesOrder].sort((a, b) => a - b);
+
+    if (tilesOrder.every((value, index) => value === sortedOrder[index])) {
+      setTimeout(() => {
+        alert('Congratulations! You solved the puzzle!');
+        startGame();
+      }, 200);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', startGame);
+</script>
+</body>
+</html>

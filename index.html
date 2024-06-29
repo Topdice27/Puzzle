@@ -39,6 +39,10 @@
     cursor: pointer;
   }
 
+  .empty {
+    visibility: hidden;
+  }
+
   button {
     padding: 10px 20px;
     font-size: 18px;
@@ -93,7 +97,7 @@
   function shuffleTiles() {
     tiles.sort(() => Math.random() - 0.5);
     tiles.forEach((tile, index) => {
-      tile.style.order = index;
+      tile.style.order = index + 1; // Update order property to match the new order
     });
   }
 

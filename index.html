@@ -124,8 +124,17 @@
     const currentPos = tiles.indexOf(currentTile);
     const emptyPos = tiles.indexOf(emptyTile);
 
-    // Check if adjacent horizontally or vertically
-    return Math.abs(currentIndex - emptyIndex) === 1 || Math.abs(currentPos - emptyPos) === boardSize;
+    // Check if tiles are adjacent in the grid (not just by order)
+    if (
+      (currentPos - 1 === emptyPos && (currentPos % boardSize) !== 0) || // left
+      (currentPos + 1 === emptyPos && (emptyPos % boardSize) !== 0) || // right
+      currentPos - boardSize === emptyPos || // top
+      currentPos + boardSize === emptyPos // bottom
+    ) {
+      return true;
+    }
+
+    return false;
   }
 
   function swapTiles(tile1, tile2) {
@@ -155,3 +164,4 @@
 </script>
 </body>
 </html>
+

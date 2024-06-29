@@ -37,6 +37,7 @@
     border: 2px solid black;
     font-size: 24px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
   }
 
   .empty {
@@ -77,7 +78,7 @@
   function initBoard() {
     const gameBoard = document.getElementById('game-board');
     gameBoard.innerHTML = '';
-    tiles = []; // Reset tiles array
+    tiles = [];
 
     const numbers = Array.from(Array(tilesCount - 1).keys()).map(i => i + 1);
     const shuffledNumbers = shuffle(numbers);
@@ -135,29 +136,29 @@
   }
 
   function moveTile(event) {
+    const clickedTile = event.target;
     const emptyTile = document.querySelector('.empty');
-    const currentTile = event.target;
 
-    if (isValidMove(currentTile, emptyTile)) {
-      swapTiles(currentTile, emptyTile);
+    if (isValidMove(clickedTile, emptyTile)) {
+      swapTiles(clickedTile, emptyTile);
       checkWin();
     }
   }
 
-  function isValidMove(currentTile, emptyTile) {
-    const currentIndex = parseInt(currentTile.getAttribute('data-id'));
+  function isValidMove(clickedTile, emptyTile) {
+    const clickedIndex = parseInt(clickedTile.getAttribute('data-id'));
     const emptyIndex = parseInt(emptyTile.getAttribute('data-id'));
 
     // Get current positions in the array
-    const currentPos = tiles.indexOf(currentTile);
+    const clickedPos = tiles.indexOf(clickedTile);
     const emptyPos = tiles.indexOf(emptyTile);
 
     // Check if tiles are adjacent in the grid (not just by order)
     if (
-      (currentPos - 1 === emptyPos && (currentPos % boardSize) !== 0) || // left
-      (currentPos + 1 === emptyPos && (emptyPos % boardSize) !== 0) || // right
-      currentPos - boardSize === emptyPos || // top
-      currentPos + boardSize === emptyPos // bottom
+      (clickedPos - 1 === emptyPos && (clickedPos % boardSize) !== 0) || // left
+      (clickedPos + 1 === emptyPos && (emptyPos % boardSize) !== 0) || // right
+      clickedPos - boardSize === emptyPos || // top
+      clickedPos + boardSize === emptyPos // bottom
     ) {
       return true;
     }
@@ -165,15 +166,28 @@
     return false;
   }
 
-  function swapTiles(tile1, tile2) {
-    const tempOrder = tile1.style.order;
-    tile1.style.order = tile2.style.order;
-    tile2.style.order = tempOrder;
+  function swapTiles(clickedTile, emptyTile) {
+    // Swap text content
+    const tempText = clickedTile.textContent;
+    clickedTile.textContent = emptyTile.textContent;
+    emptyTile.textContent = tempText;
 
-    // Update array positions
-    const index1 = tiles.indexOf(tile1);
-    const index2 = tiles.indexOf(tile2);
-    [tiles[index1], tiles[index2]] = [tiles[index2], tiles[index1]];
+    // Swap data-id attributes
+    const tempId = clickedTile.getAttribute('data-id');
+    clickedTile.setAttribute('data-id', emptyTile.getAttribute('data-id'));
+    emptyTile.setAttribute('data-id', tempId);
+
+    // Swap class to simulate the move
+    clickedTile.classList.add('empty');
+    emptyTile.classList.remove('empty');
+
+    // Ensure empty tile is visually hidden
+    emptyTile.style.visibility = 'hidden';
+
+    // Optional: Update tiles array if necessary
+    // const index1 = tiles.indexOf(clickedTile);
+    // const index2 = tiles.indexOf(emptyTile);
+    // [tiles[index1], tiles[index2]] = [tiles[index2], tiles[index1]];
   }
 
   function checkWin() {
